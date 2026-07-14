@@ -141,7 +141,7 @@ ggplot(
   theme_minimal()
 ```
 
-@fig-energy-expenditure shows the distribution of annual household energy expenditure among surveyed households. Only 195 of 765 households (about a quarter) reported a non-missing expenditure value, and the distribution is heavily right-skewed: the median household spends RWF 10,000 per year on energy, while the mean (RWF 31,311) is pulled upward by a small number of high-spending households (up to RWF 976,000). This gap between median and mean, combined with the large share of missing responses, suggests that most households meet their energy needs largely outside the cash economy 鈥� through collected firewood rather than purchased fuel 鈥� which is consistent with the cooking source results below.
+@fig-energy-expenditure shows the distribution of annual household energy expenditure among surveyed households. Only 195 of 765 households (about a quarter) reported a non-missing expenditure value, and the distribution is heavily right-skewed: the median household spends RWF 10,000 per year on energy, while the mean (RWF 31,311) is pulled upward by a small number of high-spending households (up to RWF 976,000). This gap between median and mean, combined with the large share of missing responses, suggests that most households meet their energy needs largely outside the cash economythrough collected firewood rather than purchased fuel which is consistent with the cooking source results below.
 
 ## Household Size
 
