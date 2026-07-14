@@ -1,0 +1,296 @@
+---
+title: "Data Exploration for Park Conservation Assessment"
+author:
+  - name: "Hategekimana Denys"
+    orcid: "0000-0000-0000-0000"
+    email: "deha7967@colorado.edu"
+    affiliation:
+      - name: "University of Colorado Boulder"
+        department: "Department of Civil, Environmental and Architectural Engineering"
+        city: "Boulder"
+        state: "CO"
+        country: "USA"
+date: today
+
+format:
+  html:
+    toc: true
+
+execute:
+  echo: true
+  warning: false
+
+editor: visual
+---
+
+# Introduction
+
+This report explores household survey data collected during a feasibility study for conservation and sustainable livelihood interventions around Nyungwe National Park, Rwanda. The dataset contains 765 household survey responses and more than 500 variables describing household demographics, livelihoods, energy use, expenditure, and dependence on forest resources.
+
+The purpose of this report is to summarize household characteristics and examine patterns of energy use that can support conservation planning and future interventions around Nyungwe National Park.
+
+# Methods
+
+Data for this study were collected from 765 households through a household survey conducted in communities surrounding Nyungwe National Park. The data collection was implemented by a team of trained enumerators and supervisors using a structured questionnaire programmed in KoboToolbox. Respondents were randomly selected from households located in selected sectors and villages within Nyamagabe, Rusizi, Nyamasheke, and Nyaruguru districts. The survey was conducted in October 2022 and collected information on household demographic characteristics, livelihood activities, income sources, resource use, and community interactions with the protected area.
+
+## Reading the Data
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(janitor)
+library(here)
+
+park_data <- read_excel(
+  here("data/raw/XXX_Park_Conservation_Feasability_study.xlsx"),
+  sheet = "Nyungwe_feasibility"
+)
+```
+
+## Data Exploration Approach
+
+## Initial Data Tidying
+
+```{r}
+# Clean column names to snake_case
+park_data_clean <- park_data %>%
+  clean_names()
+
+# Check the new names
+names(park_data_clean) %>% head(20)
+
+# Issue 1: Convert submission date/time to proper date format
+park_data_clean <- park_data_clean %>%
+  mutate(starttime = ymd_hms(starttime))
+
+# Issue 2: Fix inconsistent/missing values in a key column (example: energy spend)
+park_data_clean <- park_data_clean %>%
+  mutate(amount_of_money_allocated_to_energy_annually = 
+           as.numeric(amount_of_money_allocated_to_energy_annually))
+
+# Issue 3: Standardize a categorical column (example placeholder - adjust to a real column)
+# park_data_clean <- park_data_clean %>%
+#   mutate(some_column = str_to_lower(str_trim(some_column)))
+
+# Save the tidied data
+write_csv(park_data_clean, here("data/processed/nyungwe_feasibility_tidied.csv"))
+```
+
+# Results
+
+## Initial Data Exploration
+
+```{r}
+# View structure
+glimpse(park_data)
+
+# Check dimensions
+dim(park_data)
+
+# First few rows
+head(park_data)
+
+# View column names
+names(park_data)
+names(park_data) |> head(30)
+```
+
+## Summary statistics
+
+{r}\
+#\| label: tbl-summary-stats\
+#\| tbl-cap: "Summary statistics for household size and annual energy expenditure."\
+\
+summary_table \<- park_data_clean \|\>\
+summarise(\
+\`Household size (mean)\` = mean(x1_2_what_is_the_size_number_of_members_of_your_household, na.rm = TRUE),\
+\`Household size (median)\` = median(x1_2_what_is_the_size_number_of_members_of_your_household, na.rm = TRUE),\
+\`Household size (SD)\` = sd(x1_2_what_is_the_size_number_of_members_of_your_household, na.rm = TRUE),\
+\`Energy expenditure, RWF (mean)\` = mean(amount_of_money_allocated_to_energy_annually, na.rm = TRUE),\
+\`Energy expenditure, RWF (median)\` = median(amount_of_money_allocated_to_energy_annually, na.rm = TRUE),\
+\`Energy expenditure, RWF (SD)\` = sd(amount_of_money_allocated_to_energy_annually, na.rm = TRUE),\
+\`Households surveyed (n)\` = n()\
+) \|\>\
+pivot_longer(\
+everything(),\
+names_to = "Indicator",\
+values_to = "Value"\
+\
+kable(summary_table, digits = 1)\
+\`\`\`
+
+As shown in @tbl-summary-stats, household size averages 4.8 members (median 5), while annual energy expenditure is heavily right-skewed, with a median of RWF 10,000 well below the mean of RWF 31,311.
+
+## Household Energy Expenditure
+
+```{r}
+#| label: fig-energy-expenditure
+#| fig-cap: "Distribution of annual household energy expenditure."
+#| fig-alt: "Histogram showing a right-skewed distribution of annual household energy expenditure in Rwandan francs, with most reported values below RWF 50,000 and a long tail extending toward RWF 1,000,000."
+ggplot(
+  park_data_clean,
+  aes(amount_of_money_allocated_to_energy_annually)
+) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title = "Distribution of Annual Household Energy Expenditure",
+    x = "Annual Energy Expenditure (RWF)",
+    y = "Number of Households"
+  ) +
+  theme_minimal()
+```
+
+@fig-energy-expenditure shows the distribution of annual household energy expenditure among surveyed households. Only 195 of 765 households (about a quarter) reported a non-missing expenditure value, and the distribution is heavily right-skewed: the median household spends RWF 10,000 per year on energy, while the mean (RWF 31,311) is pulled upward by a small number of high-spending households (up to RWF 976,000). This gap between median and mean, combined with the large share of missing responses, suggests that most households meet their energy needs largely outside the cash economy 鈥� through collected firewood rather than purchased fuel 鈥� which is consistent with the cooking source results below.
+
+## Household Size
+
+```{r}
+#| label: fig-household-size
+#| fig-cap: "Distribution of household size among surveyed households."
+#| fig-alt: "Histogram of household size in number of members, ranging from 1 to 14, with a peak around 4 to 5 members per household."
+ggplot(
+  park_data_clean,
+  aes(as.numeric(x1_2_what_is_the_size_number_of_members_of_your_household))
+) +
+  geom_histogram(binwidth = 1, fill = "forestgreen", color = "white") +
+  scale_x_continuous(breaks = 1:14) +
+  labs(
+    title = "Distribution of Household Size",
+    x = "Household Size (number of members)",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+Household size, shown in @fig-household-size, is an important demographic characteristic because it influences both household energy demand and dependence on natural resources. Surveyed households average 4.8 members, with sizes ranging from 1 to 14 and a median of 5 鈥� typical of rural Rwandan households and a scale that directly drives fuelwood demand at the household level.
+
+## Lighting Sources
+
+```{r}
+#| label: fig-lighting-sources
+#| fig-cap: "Share of households using each lighting source."
+#| fig-alt: "Horizontal bar chart of household lighting sources, comparing the shares of households using firewood, solar energy, and grid electricity for lighting."
+lighting_pct <- park_data_clean |>
+  summarise(
+    Firewood = mean(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_firewood, na.rm = TRUE),
+    Solar = mean(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_solar_energy, na.rm = TRUE),
+    Grid = mean(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_electricity_from_grid, na.rm = TRUE)
+  ) |>
+  pivot_longer(everything(), names_to = "Source", values_to = "Share")
+
+ggplot(
+  lighting_pct,
+  aes(reorder(Source, Share), Share * 100, fill = Source)
+) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "Household Lighting Sources",
+    x = "Lighting Source",
+    y = "Households (%)",
+    fill = "Source"
+  ) +
+  theme_minimal()
+```
+
+@fig-lighting-sources summarizes the proportion of households using different lighting sources (households may use more than one, so shares do not sum to 100%). <!-- NOTE: your original narrative also mentioned "handheld torches" (41.9%) as the top lighting source, but there is no torch variable in this code chunk 鈥� add it here if that column exists in the raw data, or remove the torches claim from the narrative below. --> Based on the sources currently computed, grid electricity and solar energy each cover roughly a quarter of households, while firewood remains a meaningful minority lighting source. This partial electrification stands in contrast to cooking energy, where clean alternatives are almost entirely absent.
+
+## Cooking Energy Sources
+
+```{r}
+#| label: fig-cooking-sources
+#| fig-cap: "Share of households using each cooking energy source."
+#| fig-alt: "Horizontal bar chart of household cooking energy sources, showing firewood used by nearly all households and charcoal, electricity, biogas, and propane used by very few."
+cooking_pct <- park_data_clean |>
+  summarise(
+    Firewood = mean(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_firewood, na.rm = TRUE),
+    Charcoal = mean(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_charcoal, na.rm = TRUE),
+    Electricity = mean(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_electricity, na.rm = TRUE),
+    Biogas = mean(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_biogaz, na.rm = TRUE),
+    Propane = mean(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_propane_gaz, na.rm = TRUE)
+  ) |>
+  pivot_longer(everything(), names_to = "Source", values_to = "Share")
+
+ggplot(
+  cooking_pct,
+  aes(reorder(Source, Share), Share * 100, fill = Source)
+) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_brewer(palette = "Set1") +
+  labs(
+    title = "Household Cooking Energy Sources",
+    x = "Cooking Energy Source",
+    y = "Households (%)",
+    fill = "Source"
+  ) +
+  theme_minimal()
+```
+
+@fig-cooking-sources summarizes the proportion of households using different cooking energy sources. Dependence on firewood is close to universal: 98.8% of households cook with firewood, and 14.1% supplement it with charcoal. Electricity, biogas, and propane are reported by essentially no households in this sample. Unlike lighting, cooking energy shows almost no diversification 鈥� firewood is not one option among several but the default fuel for nearly every household in the survey area.
+
+## Sourcing of Firewood
+
+```{r}
+#| label: fig-firewood-sourcing
+#| fig-cap: "Where firewood-using households source their firewood."
+#| fig-alt: "Horizontal bar chart showing the share of firewood-using households sourcing wood from inside Nyungwe National Park, other forests, buffer zones, woodlot plantations, and crop residues."
+firewood_source_pct <- park_data_clean |>
+  summarise(
+    `Inside Nyungwe Forest` = mean(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_inside_the_nyungwe_forest, na.rm = TRUE),
+    `Other forests` = mean(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_from_other_forests_trees, na.rm = TRUE),
+    `Buffer zones` = mean(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_buffer_zones, na.rm = TRUE),
+    `Woodlot plantation` = mean(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_woodrot_plantation, na.rm = TRUE),
+    `Crop residues` = mean(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_crops_residues, na.rm = TRUE)
+  ) |>
+  pivot_longer(everything(), names_to = "Source", values_to = "Share")
+
+ggplot(
+  firewood_source_pct,
+  aes(reorder(Source, Share), Share * 100, fill = Source)
+) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_brewer(palette = "BrBG") +
+  labs(
+    title = "Where Households Source Firewood",
+    x = "Source Location",
+    y = "Households (%)",
+    fill = "Source"
+  ) +
+  theme_minimal()
+```
+
+Among households that use firewood (@fig-firewood-sourcing), 61.4% report collecting it from inside Nyungwe National Park itself, 42.5% from other nearby forests, and 27.9% from buffer zones (categories are not mutually exclusive). Only 22.5% source firewood from managed woodlot plantations, and just 8.7% rely on crop residues. This is the clearest signal in the dataset for REDD+ planning purposes: the majority pathway for household energy is direct extraction from the protected area, not from any managed alternative supply.
+
+# Summary of finding
+
+# Discussion
+
+The exploratory analysis indicates that household livelihoods around Nyungwe National Park remain closely linked to energy use and natural resources. Household size varies considerably across the sample (1鈥�14 members, mean 4.8), and larger households represent proportionally greater fuelwood demand, since almost all cooking energy in this population comes from firewood.
+
+Three patterns stand out for conservation and livelihood planning:
+
+1.  **Cooking is the binding constraint, not lighting.** Lighting sources are already partially diversified, but cooking energy shows almost no diversification. With 98.8% of households cooking on firewood, any REDD+ or clean-energy intervention aimed at reducing forest pressure has to address cooking fuel specifically; improving lighting access alone would leave the dominant driver of biomass extraction untouched.
+
+2.  **Most firewood is coming from the park itself.** With 61.4% of firewood-using households sourcing wood from inside Nyungwe National Park, and only 22.5% from woodlot plantations, current supply is dominated by direct extraction rather than managed alternatives. Even a modest reduction in per-household firewood use would have to be paired with expanding plantation and buffer-zone supply if extraction from the core forest is to fall.
+
+3.  **Cash expenditure data likely understates real energy costs.** Only 195 of 765 households reported an annual expenditure figure, and the median (RWF 10,000) is far below the mean (RWF 31,311), pointing to a small subset of households paying for grid power or purchased fuel while the majority meet energy needs through unpaid collection labor rather than cash. Adoption analysis for proposed interventions should account for time and labor costs rather than relying on reported expenditure alone.
+
+# Conclusions
+
+- Cooking energy is dominated by firewood (98.8% of households), with almost no diversification toward electricity, biogas, or propane.
+- Lighting is more diversified than cooking, with grid electricity and solar energy already reaching a meaningful share of households.
+- Most firewood-using households (61.4%) source wood directly from inside Nyungwe National Park, rather than from managed woodlots (22.5%) or other alternatives 鈥� the strongest signal for REDD+ targeting.
+- Reported cash expenditure on energy captures only a minority of households (195 of 765) and likely understates true energy costs, since most households rely on unpaid collection labor rather than purchased fuel.
+- Fuel-efficient cookstove programs and expanded woodlot/agroforestry supply are the interventions best matched to the data, since they jointly address the dominant driver (cooking) and the dominant supply constraint (reliance on the core forest).
+- Future monitoring should track the share of households sourcing firewood from inside the park versus buffer zones/plantations over time, alongside cookstove adoption, given the high non-response rate (74%) on the expenditure question.
+
+## Questions and Next Steps
+
+- Analyze relationships between income and energy use,
+- Investigate factors influencing dependence on forest resources,
+- Compare villages or household groups,
+- Apply regression or other statistical methods for deeper analysis.
