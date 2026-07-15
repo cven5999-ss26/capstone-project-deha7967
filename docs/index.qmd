@@ -170,32 +170,28 @@ Household size, shown in @fig-household-size, is an important demographic charac
 ```{r}
 #| label: fig-lighting-sources
 #| fig-cap: "Share of households using each lighting source."
-#| fig-alt: "Horizontal bar chart of household lighting sources, comparing the shares of households using firewood, solar energy, and grid electricity for lighting."
+#| fig-alt: "Horizontal bar chart of household lighting sources, comparing the shares of households using firewood, solar energy, grid electricity, and handheld torches for lighting."
+
 lighting_pct <- park_data_clean |>
   summarise(
-    Firewood = mean(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_firewood, na.rm = TRUE),
-    Solar = mean(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_solar_energy, na.rm = TRUE),
-    Grid = mean(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_electricity_from_grid, na.rm = TRUE)
+    Firewood = mean(as.numeric(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_firewood), na.rm = TRUE) * 100,
+    Solar    = mean(as.numeric(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_solar_energy), na.rm = TRUE) * 100,
+    Grid     = mean(as.numeric(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_electricity_from_grid), na.rm = TRUE) * 100,
+    Torches  = mean(as.numeric(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_torche), na.rm = TRUE) * 100
   ) |>
-  pivot_longer(everything(), names_to = "Source", values_to = "Share")
+  pivot_longer(cols = everything(), names_to = "Source", values_to = "Percent")
 
-ggplot(
-  lighting_pct,
-  aes(reorder(Source, Share), Share * 100, fill = Source)
-) +
+ggplot(lighting_pct, aes(x = Percent, y = reorder(Source, Percent), fill = Source)) +
   geom_col() +
-  coord_flip() +
-  scale_fill_brewer(palette = "Set2") +
   labs(
     title = "Household Lighting Sources",
-    x = "Lighting Source",
-    y = "Households (%)",
-    fill = "Source"
+    x = "Households (%)",
+    y = "Lighting Source"
   ) +
   theme_minimal()
 ```
 
-@fig-lighting-sources summarizes the proportion of households using different lighting sources (households may use more than one, so shares do not sum to 100%). <!-- NOTE: your original narrative also mentioned "handheld torches" (41.9%) as the top lighting source, but there is no torch variable in this code chunk 鈥� add it here if that column exists in the raw data, or remove the torches claim from the narrative below. --> Based on the sources currently computed, grid electricity and solar energy each cover roughly a quarter of households, while firewood remains a meaningful minority lighting source. This partial electrification stands in contrast to cooking energy, where clean alternatives are almost entirely absent.
+@fig-lighting-sources summarizes the proportion of households using different lighting sources (households may use more than one, so shares do not sum to 100%). Handheld torches are the most common lighting source, used by roughly 42% of households, followed by grid electricity and solar energy, each covering about a quarter of households, while firewood remains a meaningful minority lighting source. This heavy reliance on torches, alongside partial electrification, stands in contrast to cooking energy, where clean alternatives are almost entirely absent.
 
 ## Cooking Energy Sources
 
@@ -203,13 +199,14 @@ ggplot(
 #| label: fig-cooking-sources
 #| fig-cap: "Share of households using each cooking energy source."
 #| fig-alt: "Horizontal bar chart of household cooking energy sources, showing firewood used by nearly all households and charcoal, electricity, biogas, and propane used by very few."
+
 cooking_pct <- park_data_clean |>
   summarise(
-    Firewood = mean(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_firewood, na.rm = TRUE),
-    Charcoal = mean(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_charcoal, na.rm = TRUE),
-    Electricity = mean(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_electricity, na.rm = TRUE),
-    Biogas = mean(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_biogaz, na.rm = TRUE),
-    Propane = mean(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_propane_gaz, na.rm = TRUE)
+    Firewood = mean(as.numeric(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_firewood), na.rm = TRUE),
+    Charcoal = mean(as.numeric(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_charcoal), na.rm = TRUE),
+    Electricity = mean(as.numeric(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_electricity), na.rm = TRUE),
+    Biogas = mean(as.numeric(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_biogaz), na.rm = TRUE),
+    Propane = mean(as.numeric(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_propane_gaz), na.rm = TRUE)
   ) |>
   pivot_longer(everything(), names_to = "Source", values_to = "Share")
 
@@ -229,36 +226,33 @@ ggplot(
   theme_minimal()
 ```
 
-@fig-cooking-sources summarizes the proportion of households using different cooking energy sources. Dependence on firewood is close to universal: 98.8% of households cook with firewood, and 14.1% supplement it with charcoal. Electricity, biogas, and propane are reported by essentially no households in this sample. Unlike lighting, cooking energy shows almost no diversification 鈥� firewood is not one option among several but the default fuel for nearly every household in the survey area.
+@fig-cooking-sources summarizes the proportion of households using different cooking energy sources. Dependence on firewood is close to universal: 98.8% of households cook with firewood, and 14.1% supplement it with charcoal. Electricity, biogas, and propane are reported by essentially no households in this sample. Unlike lighting, cooking energy shows almost no diversification firewood is not one option among several but the default fuel for nearly every household in the survey area.
 
 ## Sourcing of Firewood
 
 ```{r}
 #| label: fig-firewood-sourcing
-#| fig-cap: "Where firewood-using households source their firewood."
-#| fig-alt: "Horizontal bar chart showing the share of firewood-using households sourcing wood from inside Nyungwe National Park, other forests, buffer zones, woodlot plantations, and crop residues."
+#| fig-cap: "Where households source firewood for lighting and/or cooking."
+#| fig-alt: "Horizontal bar chart showing that most households source firewood from inside Nyungwe Forest itself, followed by other forests, buffer zones, woodlot plantations, and crop residues."
+
 firewood_source_pct <- park_data_clean |>
   summarise(
-    `Inside Nyungwe Forest` = mean(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_inside_the_nyungwe_forest, na.rm = TRUE),
-    `Other forests` = mean(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_from_other_forests_trees, na.rm = TRUE),
-    `Buffer zones` = mean(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_buffer_zones, na.rm = TRUE),
-    `Woodlot plantation` = mean(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_woodrot_plantation, na.rm = TRUE),
-    `Crop residues` = mean(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_crops_residues, na.rm = TRUE)
+    Inside_Nyungwe_Forest = mean(as.numeric(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_inside_the_nyungwe_forest), na.rm = TRUE) * 100,
+    Other_forests_trees   = mean(as.numeric(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_from_other_forests_trees), na.rm = TRUE) * 100,
+    Buffer_zones          = mean(as.numeric(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_buffer_zones), na.rm = TRUE) * 100,
+    Woodlot_plantation    = mean(as.numeric(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_woodrot_plantation), na.rm = TRUE) * 100,
+    Crop_residues         = mean(as.numeric(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_crops_residues), na.rm = TRUE) * 100,
+    Other                 = mean(as.numeric(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_others), na.rm = TRUE) * 100
   ) |>
-  pivot_longer(everything(), names_to = "Source", values_to = "Share")
+  pivot_longer(cols = everything(), names_to = "Source", values_to = "Percent") |>
+  mutate(Source = str_replace_all(Source, "_", " "))
 
-ggplot(
-  firewood_source_pct,
-  aes(reorder(Source, Share), Share * 100, fill = Source)
-) +
+ggplot(firewood_source_pct, aes(x = Percent, y = reorder(Source, Percent), fill = Source)) +
   geom_col() +
-  coord_flip() +
-  scale_fill_brewer(palette = "BrBG") +
   labs(
-    title = "Where Households Source Firewood",
-    x = "Source Location",
-    y = "Households (%)",
-    fill = "Source"
+    title = "Sourcing of Firewood",
+    x = "Households (%)",
+    y = "Source Location"
   ) +
   theme_minimal()
 ```
@@ -269,7 +263,7 @@ Among households that use firewood (@fig-firewood-sourcing), 61.4% report collec
 
 # Discussion
 
-The exploratory analysis indicates that household livelihoods around Nyungwe National Park remain closely linked to energy use and natural resources. Household size varies considerably across the sample (1鈥�14 members, mean 4.8), and larger households represent proportionally greater fuelwood demand, since almost all cooking energy in this population comes from firewood.
+The exploratory analysis indicates that household livelihoods around Nyungwe National Park remain closely linked to energy use and natural resources. Household size varies considerably across the sample 4 members, mean 4.8), and larger households represent proportionally greater fuelwood demand, since almost all cooking energy in this population comes from firewood.
 
 Three patterns stand out for conservation and livelihood planning:
 
@@ -283,7 +277,7 @@ Three patterns stand out for conservation and livelihood planning:
 
 - Cooking energy is dominated by firewood (98.8% of households), with almost no diversification toward electricity, biogas, or propane.
 - Lighting is more diversified than cooking, with grid electricity and solar energy already reaching a meaningful share of households.
-- Most firewood-using households (61.4%) source wood directly from inside Nyungwe National Park, rather than from managed woodlots (22.5%) or other alternatives 鈥� the strongest signal for REDD+ targeting.
+- Most firewood-using households (61.4%) source wood directly from inside Nyungwe National Park, rather than from managed woodlots (22.5%) or other alternatives the strongest signal for REDD+ targeting.
 - Reported cash expenditure on energy captures only a minority of households (195 of 765) and likely understates true energy costs, since most households rely on unpaid collection labor rather than purchased fuel.
 - Fuel-efficient cookstove programs and expanded woodlot/agroforestry supply are the interventions best matched to the data, since they jointly address the dominant driver (cooking) and the dominant supply constraint (reliance on the core forest).
 - Future monitoring should track the share of households sourcing firewood from inside the park versus buffer zones/plantations over time, alongside cookstove adoption, given the high non-response rate (74%) on the expenditure question.
