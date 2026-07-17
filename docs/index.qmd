@@ -52,9 +52,12 @@ park_data <- read_excel(
 ## Initial Data Tidying
 
 ```{r}
+
 # Clean column names to snake_case
 park_data_clean <- park_data %>%
-  clean_names()
+  clean_names() %>%
+  rename(household_size = x1_2_what_is_the_size_number_of_members_of_your_household) %>%
+  mutate(household_size = as.numeric(household_size))
 
 # Check the new names
 names(park_data_clean) %>% head(20)
@@ -68,7 +71,7 @@ park_data_clean <- park_data_clean %>%
   mutate(amount_of_money_allocated_to_energy_annually = 
            as.numeric(amount_of_money_allocated_to_energy_annually))
 
-# Issue 3: Standardize a categorical column (example placeholder - adjust to a real column)
+#Issue 3: Standardize a categorical column (example placeholder - adjust to a real column)
 # park_data_clean <- park_data_clean %>%
 #   mutate(some_column = str_to_lower(str_trim(some_column)))
 
@@ -97,51 +100,25 @@ names(park_data) |> head(30)
 
 ## Summary statistics
 
-{r}\
-#\| label: tbl-summary-stats\
-#\| tbl-cap: "Summary statistics for household size and annual energy expenditure."\
-\
-summary_table \<- park_data_clean \|\>\
-summarise(\
-\`Household size (mean)\` = mean(x1_2_what_is_the_size_number_of_members_of_your_household, na.rm = TRUE),\
-\`Household size (median)\` = median(x1_2_what_is_the_size_number_of_members_of_your_household, na.rm = TRUE),\
-\`Household size (SD)\` = sd(x1_2_what_is_the_size_number_of_members_of_your_household, na.rm = TRUE),\
-\`Energy expenditure, RWF (mean)\` = mean(amount_of_money_allocated_to_energy_annually, na.rm = TRUE),\
-\`Energy expenditure, RWF (median)\` = median(amount_of_money_allocated_to_energy_annually, na.rm = TRUE),\
-\`Energy expenditure, RWF (SD)\` = sd(amount_of_money_allocated_to_energy_annually, na.rm = TRUE),\
-\`Households surveyed (n)\` = n()\
-) \|\>\
-pivot_longer(\
-everything(),\
-names_to = "Indicator",\
-values_to = "Value"\
-\
-kable(summary_table, digits = 1)\
-\`\`\`
-
-As shown in @tbl-summary-stats, household size averages 4.8 members (median 5), while annual energy expenditure is heavily right-skewed, with a median of RWF 10,000 well below the mean of RWF 31,311.
-
-## Household Energy Expenditure
-
 ```{r}
-#| label: fig-energy-expenditure
-#| fig-cap: "Distribution of annual household energy expenditure."
-#| fig-alt: "Histogram showing a right-skewed distribution of annual household energy expenditure in Rwandan francs, with most reported values below RWF 50,000 and a long tail extending toward RWF 1,000,000."
-ggplot(
-  park_data_clean,
-  aes(amount_of_money_allocated_to_energy_annually)
-) +
-  geom_histogram(bins = 30, fill = "steelblue", color = "white") +
-  scale_x_continuous(labels = scales::comma) +
-  labs(
-    title = "Distribution of Annual Household Energy Expenditure",
-    x = "Annual Energy Expenditure (RWF)",
-    y = "Number of Households"
-  ) +
-  theme_minimal()
+#| label: tbl-summary #| tbl-cap: "Summary statistics for selected household characteristics."
+#|library(dplyr)
+library(knitr)
+
+library(dplyr)
+library(knitr)
+park_data_clean %>%
+  summarise(
+    `Number of households` = n(),
+    `Mean household size` = mean(household_size, na.rm = TRUE),
+    `Median household size` = median(household_size, na.rm = TRUE),
+    `SD household size` = sd(household_size, na.rm = TRUE),
+    `Minimum household size` = min(household_size, na.rm = TRUE),
+    `Maximum household size` = max(household_size, na.rm = TRUE)
+  ) |> kable()
 ```
 
-@fig-energy-expenditure shows the distribution of annual household energy expenditure among surveyed households. Only 195 of 765 households (about a quarter) reported a non-missing expenditure value, and the distribution is heavily right-skewed: the median household spends RWF 10,000 per year on energy, while the mean (RWF 31,311) is pulled upward by a small number of high-spending households (up to RWF 976,000). This gap between median and mean, combined with the large share of missing responses, suggests that most households meet their energy needs largely outside the cash economythrough collected firewood rather than purchased fuel which is consistent with the cooking source results below.
+As shown in \@tbl-summary-stats, the survey covered 765 households. Household size averaged 4.8 members (median = 5 members, SD = 2.1 members), with households ranging from 1 to 14 members. The distribution indicates that most households had between 3 and 6 members, while a small number of households had larger family sizes. These household characteristics provide important context for understanding variations in household energy needs, resource use patterns, and potential dependence on forest resources around Nyungwe National Park.
 
 ## Household Size
 
@@ -149,12 +126,8 @@ ggplot(
 #| label: fig-household-size
 #| fig-cap: "Distribution of household size among surveyed households."
 #| fig-alt: "Histogram of household size in number of members, ranging from 1 to 14, with a peak around 4 to 5 members per household."
-ggplot(
-  park_data_clean,
-  aes(as.numeric(x1_2_what_is_the_size_number_of_members_of_your_household))
-) +
-  geom_histogram(binwidth = 1, fill = "forestgreen", color = "white") +
-  scale_x_continuous(breaks = 1:14) +
+ggplot(park_data_clean, aes(x = household_size)) +
+  geom_histogram(binwidth = 1, fill = "steelblue", color = "white") +
   labs(
     title = "Distribution of Household Size",
     x = "Household Size (number of members)",
@@ -163,7 +136,7 @@ ggplot(
   theme_minimal()
 ```
 
-Household size, shown in @fig-household-size, is an important demographic characteristic because it influences both household energy demand and dependence on natural resources. Surveyed households average 4.8 members, with sizes ranging from 1 to 14 and a median of 5 鈥� typical of rural Rwandan households and a scale that directly drives fuelwood demand at the household level.
+Household size, shown in @fig-household-size, is an important demographic characteristic because it influences both household energy demand and dependence on natural resources. Surveyed households average 4.8 members, with sizes ranging from 1 to 14 and a median of 5 typical of rural Rwandan households and a scale that directly drives fuelwood demand at the household level.
 
 ## Lighting Sources
 
@@ -257,7 +230,7 @@ ggplot(firewood_source_pct, aes(x = Percent, y = reorder(Source, Percent), fill 
   theme_minimal()
 ```
 
-Among households that use firewood (@fig-firewood-sourcing), 61.4% report collecting it from inside Nyungwe National Park itself, 42.5% from other nearby forests, and 27.9% from buffer zones (categories are not mutually exclusive). Only 22.5% source firewood from managed woodlot plantations, and just 8.7% rely on crop residues. This is the clearest signal in the dataset for REDD+ planning purposes: the majority pathway for household energy is direct extraction from the protected area, not from any managed alternative supply.
+Among households that use firewood (@fig-firewood-sourcing), 61.4% report collecting it from inside Nyungwe National Park itself, 42.5% from other nearby forests, and 27.9% from buffer zones (categories are not mutually exclusive). Only 22.5% source firewood from managed woodlot plantations, and just 8.7% rely on crop residues. This is the clearest signal in the dataset for planning purposes: the majority pathway for household energy is direct extraction from the protected area, not from any managed alternative supply.
 
 # Summary of finding
 

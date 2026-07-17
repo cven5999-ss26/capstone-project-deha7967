@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Hategekimana Denys">
-<meta name="dcterms.date" content="2026-07-15">
+<meta name="dcterms.date" content="2026-07-17">
 
 <title>Data Exploration for Park Conservation Assessment</title>
 <style>
@@ -95,7 +95,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#initial-data-exploration" id="toc-initial-data-exploration" class="nav-link" data-scroll-target="#initial-data-exploration">Initial Data Exploration</a></li>
   <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics">Summary statistics</a></li>
-  <li><a href="#household-energy-expenditure" id="toc-household-energy-expenditure" class="nav-link" data-scroll-target="#household-energy-expenditure">Household Energy Expenditure</a></li>
   <li><a href="#household-size" id="toc-household-size" class="nav-link" data-scroll-target="#household-size">Household Size</a></li>
   <li><a href="#lighting-sources" id="toc-lighting-sources" class="nav-link" data-scroll-target="#lighting-sources">Lighting Sources</a></li>
   <li><a href="#cooking-energy-sources" id="toc-cooking-energy-sources" class="nav-link" data-scroll-target="#cooking-energy-sources">Cooking Energy Sources</a></li>
@@ -138,7 +137,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 15, 2026</p>
+      <p class="date">July 17, 2026</p>
     </div>
   </div>
   
@@ -1379,74 +1378,35 @@ $ `_index`                                                                      
 </section>
 <section id="summary-statistics" class="level2">
 <h2 class="anchored" data-anchor-id="summary-statistics">Summary statistics</h2>
-<p>{r}<br>
-#| label: tbl-summary-stats<br>
-#| tbl-cap: “Summary statistics for household size and annual energy expenditure.”<br>
-<br>
-summary_table &lt;- park_data_clean |&gt;<br>
-summarise(<br>
-`Household size (mean)` = mean(x1_2_what_is_the_size_number_of_members_of_your_household, na.rm = TRUE),<br>
-`Household size (median)` = median(x1_2_what_is_the_size_number_of_members_of_your_household, na.rm = TRUE),<br>
-`Household size (SD)` = sd(x1_2_what_is_the_size_number_of_members_of_your_household, na.rm = TRUE),<br>
-`Energy expenditure, RWF (mean)` = mean(amount_of_money_allocated_to_energy_annually, na.rm = TRUE),<br>
-`Energy expenditure, RWF (median)` = median(amount_of_money_allocated_to_energy_annually, na.rm = TRUE),<br>
-`Energy expenditure, RWF (SD)` = sd(amount_of_money_allocated_to_energy_annually, na.rm = TRUE),<br>
-`Households surveyed (n)` = n()<br>
-) |&gt;<br>
-pivot_longer(<br>
-everything(),<br>
-names_to = “Indicator”,<br>
-values_to = “Value”<br>
-<br>
-kable(summary_table, digits = 1)<br>
-```</p>
-<p>As shown in <strong>?@tbl-summary-stats</strong>, household size averages 4.8 members (median 5), while annual energy expenditure is heavily right-skewed, with a median of RWF 10,000 well below the mean of RWF 31,311.</p>
-</section>
-<section id="household-energy-expenditure" class="level2">
-<h2 class="anchored" data-anchor-id="household-energy-expenditure">Household Energy Expenditure</h2>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  park_data_clean,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(amount_of_money_allocated_to_energy_annually)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Distribution of Annual Household Energy Expenditure"</span>,</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Annual Energy Expenditure (RWF)"</span>,</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of Households"</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div id="fig-energy-expenditure" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Histogram showing a right-skewed distribution of annual household energy expenditure in Rwandan francs, with most reported values below RWF 50,000 and a long tail extending toward RWF 1,000,000.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-energy-expenditure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-energy-expenditure-1.png" class="img-fluid figure-img" alt="Histogram showing a right-skewed distribution of annual household energy expenditure in Rwandan francs, with most reported values below RWF 50,000 and a long tail extending toward RWF 1,000,000." width="672">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-energy-expenditure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Distribution of annual household energy expenditure.
+<div id="tbl-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1
 </figcaption>
+<div aria-describedby="tbl-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+
+</div>
+</div>
 </figure>
 </div>
-</div>
-</div>
-<p><a href="#fig-energy-expenditure" class="quarto-xref">Figure&nbsp;1</a> shows the distribution of annual household energy expenditure among surveyed households. Only 195 of 765 households (about a quarter) reported a non-missing expenditure value, and the distribution is heavily right-skewed: the median household spends RWF 10,000 per year on energy, while the mean (RWF 31,311) is pulled upward by a small number of high-spending households (up to RWF 976,000). This gap between median and mean, combined with the large share of missing responses, suggests that most households meet their energy needs largely outside the cash economythrough collected firewood rather than purchased fuel which is consistent with the cooking source results below.</p>
+<p>As shown in @tbl-summary-stats, the survey covered 765 households. Household size averaged 4.8 members (median = 5 members, SD = 2.1 members), with households ranging from 1 to 14 members. The distribution indicates that most households had between 3 and 6 members, while a small number of households had larger family sizes. These household characteristics provide important context for understanding variations in household energy needs, resource use patterns, and potential dependence on forest resources around Nyungwe National Park.</p>
 </section>
 <section id="household-size" class="level2">
 <h2 class="anchored" data-anchor-id="household-size">Household Size</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  park_data_clean,</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="fu">as.numeric</span>(x1_2_what_is_the_size_number_of_members_of_your_household))</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">"forestgreen"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">14</span>) <span class="sc">+</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Distribution of Household Size"</span>,</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Household Size (number of members)"</span>,</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Frequency"</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  park_data_clean,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="fu">as.numeric</span>(x1_2_what_is_the_size_number_of_members_of_your_household))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">"forestgreen"</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Distribution of Household Size"</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Household Size (number of members)"</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Frequency"</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-household-size" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Histogram of household size in number of members, ranging from 1 to 14, with a peak around 4 to 5 members per household.">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1454,34 +1414,34 @@ Figure&nbsp;1: Distribution of annual household energy expenditure.
 <img src="index_files/figure-html/fig-household-size-1.png" class="img-fluid figure-img" alt="Histogram of household size in number of members, ranging from 1 to 14, with a peak around 4 to 5 members per household." width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-household-size-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Distribution of household size among surveyed households.
+Figure&nbsp;1: Distribution of household size among surveyed households.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Household size, shown in <a href="#fig-household-size" class="quarto-xref">Figure&nbsp;2</a>, is an important demographic characteristic because it influences both household energy demand and dependence on natural resources. Surveyed households average 4.8 members, with sizes ranging from 1 to 14 and a median of 5 鈥� typical of rural Rwandan households and a scale that directly drives fuelwood demand at the household level.</p>
+<p>Household size, shown in <a href="#fig-household-size" class="quarto-xref">Figure&nbsp;1</a>, is an important demographic characteristic because it influences both household energy demand and dependence on natural resources. Surveyed households average 4.8 members, with sizes ranging from 1 to 14 and a median of 5 鈥� typical of rural Rwandan households and a scale that directly drives fuelwood demand at the household level.</p>
 </section>
 <section id="lighting-sources" class="level2">
 <h2 class="anchored" data-anchor-id="lighting-sources">Lighting Sources</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>lighting_pct <span class="ot">&lt;-</span> park_data_clean <span class="sc">|&gt;</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Firewood =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_firewood), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Solar    =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_solar_energy), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Grid     =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_electricity_from_grid), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Torches  =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_torche), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Source"</span>, <span class="at">values_to =</span> <span class="st">"Percent"</span>)</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(lighting_pct, <span class="fu">aes</span>(<span class="at">x =</span> Percent, <span class="at">y =</span> <span class="fu">reorder</span>(Source, Percent), <span class="at">fill =</span> Source)) <span class="sc">+</span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Household Lighting Sources"</span>,</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Households (%)"</span>,</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Lighting Source"</span></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>lighting_pct <span class="ot">&lt;-</span> park_data_clean <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Firewood =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_firewood), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Solar    =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_solar_energy), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Grid     =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_electricity_from_grid), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Torches  =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_1_what_is_the_source_of_lighting_in_your_house_choose_many_as_you_can_torche), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Source"</span>, <span class="at">values_to =</span> <span class="st">"Percent"</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(lighting_pct, <span class="fu">aes</span>(<span class="at">x =</span> Percent, <span class="at">y =</span> <span class="fu">reorder</span>(Source, Percent), <span class="at">fill =</span> Source)) <span class="sc">+</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Household Lighting Sources"</span>,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Households (%)"</span>,</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Lighting Source"</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-lighting-sources" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Horizontal bar chart of household lighting sources, comparing the shares of households using firewood, solar energy, grid electricity, and handheld torches for lighting.">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1489,41 +1449,41 @@ Figure&nbsp;2: Distribution of household size among surveyed households.
 <img src="index_files/figure-html/fig-lighting-sources-1.png" class="img-fluid figure-img" alt="Horizontal bar chart of household lighting sources, comparing the shares of households using firewood, solar energy, grid electricity, and handheld torches for lighting." width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lighting-sources-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Share of households using each lighting source.
+Figure&nbsp;2: Share of households using each lighting source.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p><a href="#fig-lighting-sources" class="quarto-xref">Figure&nbsp;3</a> summarizes the proportion of households using different lighting sources (households may use more than one, so shares do not sum to 100%). Handheld torches are the most common lighting source, used by roughly 42% of households, followed by grid electricity and solar energy, each covering about a quarter of households, while firewood remains a meaningful minority lighting source. This heavy reliance on torches, alongside partial electrification, stands in contrast to cooking energy, where clean alternatives are almost entirely absent.</p>
+<p><a href="#fig-lighting-sources" class="quarto-xref">Figure&nbsp;2</a> summarizes the proportion of households using different lighting sources (households may use more than one, so shares do not sum to 100%). Handheld torches are the most common lighting source, used by roughly 42% of households, followed by grid electricity and solar energy, each covering about a quarter of households, while firewood remains a meaningful minority lighting source. This heavy reliance on torches, alongside partial electrification, stands in contrast to cooking energy, where clean alternatives are almost entirely absent.</p>
 </section>
 <section id="cooking-energy-sources" class="level2">
 <h2 class="anchored" data-anchor-id="cooking-energy-sources">Cooking Energy Sources</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>cooking_pct <span class="ot">&lt;-</span> park_data_clean <span class="sc">|&gt;</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Firewood =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_firewood), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Charcoal =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_charcoal), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Electricity =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_electricity), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Biogas =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_biogaz), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Propane =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_propane_gaz), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Source"</span>, <span class="at">values_to =</span> <span class="st">"Share"</span>)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  cooking_pct,</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="fu">reorder</span>(Source, Share), Share <span class="sc">*</span> <span class="dv">100</span>, <span class="at">fill =</span> Source)</span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set1"</span>) <span class="sc">+</span></span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Household Cooking Energy Sources"</span>,</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Cooking Energy Source"</span>,</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Households (%)"</span>,</span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Source"</span></span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>cooking_pct <span class="ot">&lt;-</span> park_data_clean <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Firewood =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_firewood), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Charcoal =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_charcoal), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Electricity =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_electricity), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Biogas =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_biogaz), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Propane =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_2_what_is_your_main_source_of_energy_for_cooking_at_your_household_choose_many_as_you_can_propane_gaz), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Source"</span>, <span class="at">values_to =</span> <span class="st">"Share"</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  cooking_pct,</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="fu">reorder</span>(Source, Share), Share <span class="sc">*</span> <span class="dv">100</span>, <span class="at">fill =</span> Source)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set1"</span>) <span class="sc">+</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Household Cooking Energy Sources"</span>,</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Cooking Energy Source"</span>,</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Households (%)"</span>,</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Source"</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-cooking-sources" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Horizontal bar chart of household cooking energy sources, showing firewood used by nearly all households and charcoal, electricity, biogas, and propane used by very few.">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1531,37 +1491,37 @@ Figure&nbsp;3: Share of households using each lighting source.
 <img src="index_files/figure-html/fig-cooking-sources-1.png" class="img-fluid figure-img" alt="Horizontal bar chart of household cooking energy sources, showing firewood used by nearly all households and charcoal, electricity, biogas, and propane used by very few." width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cooking-sources-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Share of households using each cooking energy source.
+Figure&nbsp;3: Share of households using each cooking energy source.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p><a href="#fig-cooking-sources" class="quarto-xref">Figure&nbsp;4</a> summarizes the proportion of households using different cooking energy sources. Dependence on firewood is close to universal: 98.8% of households cook with firewood, and 14.1% supplement it with charcoal. Electricity, biogas, and propane are reported by essentially no households in this sample. Unlike lighting, cooking energy shows almost no diversification firewood is not one option among several but the default fuel for nearly every household in the survey area.</p>
+<p><a href="#fig-cooking-sources" class="quarto-xref">Figure&nbsp;3</a> summarizes the proportion of households using different cooking energy sources. Dependence on firewood is close to universal: 98.8% of households cook with firewood, and 14.1% supplement it with charcoal. Electricity, biogas, and propane are reported by essentially no households in this sample. Unlike lighting, cooking energy shows almost no diversification firewood is not one option among several but the default fuel for nearly every household in the survey area.</p>
 </section>
 <section id="sourcing-of-firewood" class="level2">
 <h2 class="anchored" data-anchor-id="sourcing-of-firewood">Sourcing of Firewood</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>firewood_source_pct <span class="ot">&lt;-</span> park_data_clean <span class="sc">|&gt;</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Inside_Nyungwe_Forest =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_inside_the_nyungwe_forest), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Other_forests_trees   =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_from_other_forests_trees), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Buffer_zones          =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_buffer_zones), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Woodlot_plantation    =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_woodrot_plantation), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Crop_residues         =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_crops_residues), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Other                 =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_others), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Source"</span>, <span class="at">values_to =</span> <span class="st">"Percent"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Source =</span> <span class="fu">str_replace_all</span>(Source, <span class="st">"_"</span>, <span class="st">" "</span>))</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(firewood_source_pct, <span class="fu">aes</span>(<span class="at">x =</span> Percent, <span class="at">y =</span> <span class="fu">reorder</span>(Source, Percent), <span class="at">fill =</span> Source)) <span class="sc">+</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Sourcing of Firewood"</span>,</span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Households (%)"</span>,</span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Source Location"</span></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>firewood_source_pct <span class="ot">&lt;-</span> park_data_clean <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Inside_Nyungwe_Forest =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_inside_the_nyungwe_forest), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Other_forests_trees   =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_from_other_forests_trees), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Buffer_zones          =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_buffer_zones), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Woodlot_plantation    =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_woodrot_plantation), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Crop_residues         =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_crops_residues), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Other                 =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(x4_4_specifically_if_u_use_firewood_in_both_cases_lighting_and_or_cooking_where_do_source_them_others), <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"Source"</span>, <span class="at">values_to =</span> <span class="st">"Percent"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Source =</span> <span class="fu">str_replace_all</span>(Source, <span class="st">"_"</span>, <span class="st">" "</span>))</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(firewood_source_pct, <span class="fu">aes</span>(<span class="at">x =</span> Percent, <span class="at">y =</span> <span class="fu">reorder</span>(Source, Percent), <span class="at">fill =</span> Source)) <span class="sc">+</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Sourcing of Firewood"</span>,</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Households (%)"</span>,</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Source Location"</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div id="fig-firewood-sourcing" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Horizontal bar chart showing that most households source firewood from inside Nyungwe Forest itself, followed by other forests, buffer zones, woodlot plantations, and crop residues.">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1569,13 +1529,13 @@ Figure&nbsp;4: Share of households using each cooking energy source.
 <img src="index_files/figure-html/fig-firewood-sourcing-1.png" class="img-fluid figure-img" alt="Horizontal bar chart showing that most households source firewood from inside Nyungwe Forest itself, followed by other forests, buffer zones, woodlot plantations, and crop residues." width="672">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-firewood-sourcing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Where households source firewood for lighting and/or cooking.
+Figure&nbsp;4: Where households source firewood for lighting and/or cooking.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Among households that use firewood (<a href="#fig-firewood-sourcing" class="quarto-xref">Figure&nbsp;5</a>), 61.4% report collecting it from inside Nyungwe National Park itself, 42.5% from other nearby forests, and 27.9% from buffer zones (categories are not mutually exclusive). Only 22.5% source firewood from managed woodlot plantations, and just 8.7% rely on crop residues. This is the clearest signal in the dataset for REDD+ planning purposes: the majority pathway for household energy is direct extraction from the protected area, not from any managed alternative supply.</p>
+<p>Among households that use firewood (<a href="#fig-firewood-sourcing" class="quarto-xref">Figure&nbsp;4</a>), 61.4% report collecting it from inside Nyungwe National Park itself, 42.5% from other nearby forests, and 27.9% from buffer zones (categories are not mutually exclusive). Only 22.5% source firewood from managed woodlot plantations, and just 8.7% rely on crop residues. This is the clearest signal in the dataset for REDD+ planning purposes: the majority pathway for household energy is direct extraction from the protected area, not from any managed alternative supply.</p>
 </section>
 </section>
 <section id="summary-of-finding" class="level1">
